@@ -114,15 +114,17 @@ async def random_cat(ctx, num: int = 1):
                 res = await r.json()
                 await client.say(res['file'])
 
-'''
+
 # Define Command
 @client.command(pass_context=True)
-async def manual(ctx, val: str = ""):
+async def manual(ctx, page: int = 0):
     web_file = urllib.request.urlopen("https://content.vexrobotics.com/docs/vrc-inthezone/VRC-InTheZone-GameManual-20170817.pdf")
     local_file = open('manual.pdf', 'wb')
     local_file.write(web_file.read())
-    pdfReader = PyPDF2.PdfFileReader(local_file)'''
-    # await client.say(pdfReader.numPages)
+    local_file_read = open('manual.pdf', 'rb')
+    pdfReader = PyPDF2.PdfFileReader(local_file_read)
+    pageObj = pdfReader.getPage(page)
+    await client.say(pageObj.extractText())
 
 
 
