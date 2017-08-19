@@ -9,12 +9,12 @@ from html.parser import HTMLParser
 import math as m
 from discord.voice_client import VoiceClient
 from discord.ext.commands import Bot
-
+import PyPDF2
 # Image Editing
 from PIL import Image
 from random import randint
 import urllib.request
-
+import urllib
 # The below three are for replacing requests, didn't work
 import aiohttp
 import asyncio
@@ -114,6 +114,20 @@ async def random_cat(ctx, num: int = 1):
             async with cs.get('http://random.cat/meow') as r:
                 res = await r.json()
                 await client.say(res['file'])
+
+
+# Define Command
+@client.command(pass_context=True)
+async def manual(ctx, val: str = ""):
+    web_file = urllib.request.urlopen("https://content.vexrobotics.com/docs/vrc-inthezone/VRC-InTheZone-GameManual-20170817.pdf")
+    pdfFileObj = open(web_file, 'rb')
+    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+    pageObj = pdfReader.getPage(0)
+    pageObj.extractText()
+
+    # thing = BeautifulSoup(page.text, 'html.parser')
+    # definition = thing.find_all('div', attrs={"class": "card-primary-content"})
+    # await client.say(strip_tags(str(definition[0])))
 
 
 ########################
