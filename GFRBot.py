@@ -144,9 +144,9 @@ async def math(ctx, oper: str = "", num1: int = 0, num2: int = 0):
     elif oper == "factorial":
         await client.say(m.factorial(num1))
     elif oper == "sqrt":
-        await client.say(m.sqrt(num))
+        await client.say(m.sqrt(num1))
     elif oper == "pow":
-        await client.say(m.pow(num, num2))
+        await client.say(m.pow(num1, num2))
     elif oper == "factorial":
         await client.say(m.factorial(num1))
     else:
