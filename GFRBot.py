@@ -1,0 +1,200 @@
+#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
+import discord
+from discord.ext import commands
+import random
+# import time
+from bs4 import BeautifulSoup
+import requests
+from html.parser import HTMLParser
+import math as m
+from discord.voice_client import VoiceClient
+from discord.ext.commands import Bot
+
+# Image Editing
+from PIL import Image
+from random import randint
+import urllib.request
+
+# The below three are for replacing requests, didn't work
+import aiohttp
+import asyncio
+import async_timeout
+vc_clients = {}
+
+
+# Put at the beginning of command
+prefix = '.'
+# Description of bot
+des = 'print("Hello!")'
+# Make the client
+client = commands.Bot(description=des, command_prefix=prefix)
+
+
+@client.event
+async def on_ready():
+    print("----------------------")
+    print("Logged In As")
+    print("Username: %s" % client.user.name)
+    print("ID: %s" % client.user.id)
+    print("----------------------")
+
+
+# Nickname Command
+@client.command(pass_context=True)
+async def nick(ctx, user: discord.Member, nick: str):
+    try:
+        await client.change_nickname(user, nick)
+    except:
+        await client.say("Failed.")
+
+
+# Spam Command
+@client.command(pass_context=True)
+async def spam(ctx, stuff: str, num: int = 5):
+    for i in range(num):
+        await client.say(stuff)
+
+
+# Test Command
+@client.command(pass_context=True)
+async def test(ctx, num: int = 1):
+    for i in range(num):
+        await client.say("ping!")
+
+
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.fed = []
+
+    def handle_data(self, d):
+        self.fed.append(d)
+
+    def get_data(self):
+        return ''.join(self.fed)
+
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
+
+# Define Command
+@client.command(pass_context=True)
+async def define(ctx, word):
+    page = requests.get("https://www.merriam-webster.com/dictionary/" + word)
+    thing = BeautifulSoup(page.text, 'html.parser')
+    definition = thing.find_all('div', attrs={"class": "card-primary-content"})
+    await client.say(strip_tags(str(definition[0])))
+
+
+# Greet Command
+@client.event
+async def on_member_join(member):
+    server = member.server
+    fmt = 'Welcome {0.mention} to {1.name}!'
+    await client.send_message(server, fmt.format(member, server))
+
+
+# Look back at when joined command
+@client.command()
+async def joined(member: discord.Member):
+    await client.say('{0.name} joined in {0.joined_at}'.format(member))
+
+
+# Define Command
+@client.command(pass_context=True)
+async def random_cat(ctx, num: int = 1):
+    # Using async
+    for i in range(num):
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get('http://random.cat/meow') as r:
+                res = await r.json()
+                await client.say(res['file'])
+
+
+########################
+# Mathemetical Commands#
+########################
+
+
+# Math Check Command
+@client.command(pass_context=True)
+async def math(ctx):
+    await client.say("Math commands:")
+    await client.say("factorial [num] (takes a factorial of a number)")
+    await client.say("^ Do not enter a number greater than 1000")
+    await client.say("sum [num] [num2] (adds two numbers")
+    await client.say("sqrt [num] (finds the square root)")
+    await client.say("pow [num] [num2] (raise num to the num2 power)")
+
+
+# Factorial Command
+@client.command(pass_context=True)
+async def factorial(ctx, num: int):
+    await client.say(m.factorial(num))
+
+
+# Square Root Command
+@client.command(pass_context=True)
+async def sqrt(ctx, num: int):
+    await client.say(m.sqrt(num))
+
+
+# Power Command
+@client.command(pass_context=True)
+async def pow(ctx, num: int, num2: int):
+    await client.say(m.pow(num, num2))
+
+
+# Edit Command
+@client.command(pass_context=True)
+async def img(ctx, url="local.jpg", config=""):
+    await client.delete_message(ctx.message)
+    try:
+        urllib.request.urlretrieve(url, "local.jpg")
+        which = "local.jpg"
+    except:
+        which = url
+
+    img = Image.open(which)
+    width, height = img.size
+    var1 = randint(-150, 150)
+    var2 = randint(-150, 150)
+    var3 = randint(-150, 150)
+
+    choice = config
+    try:
+        if config == "":
+            pass
+        else:
+            for x in range(width):
+                for y in range(height):
+                    pixel_coordinate = (x, y)
+                    r, g, b = img.getpixel(pixel_coordinate)
+                    dimness = 50
+                    var4 = randint(-255, 255)
+                    var5 = randint(-255, 255)
+                    var6 = randint(-255, 255)
+                    choose = {'negative': (255 - r, 255 - g, 255 - b),
+                              'hippie': (r, g, 255-b),
+                              'dim': (r-dimness, g-dimness, b-dimness),
+                              'haze': (r+var4, g+var5, b+var6),
+                              'rand_tint': (r+var1, g+var2, b+var3),
+                              'green': (r, g+125, b),
+                              'red': (r+125, g, b),
+                              'blue': (r, g, b+125),
+                              'cyan': (r, g+125, b+125),
+                              'pink': (r+125, g, b+125)
+                              }
+                    img.putpixel(pixel_coordinate, choose[choice])
+        img.save("local.jpg")
+        await client.upload('local.jpg')
+    except:
+        await client.say("Incorrect format.")
+
+
+client.run("MzQ3OTMyNDQ1NDI3MTA1ODAy.DHkfOA.T26ERyYvLVEmG3bNB-7eW8TJnxA")
