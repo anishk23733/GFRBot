@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import Embed
 # import time
 from bs4 import BeautifulSoup
 import requests
@@ -145,6 +146,8 @@ def find(word):
 	return found
 
 def findInSection(word):
+	word = word.lower()
+	print(word)
 	RULE_PAGES = {
 		"start": 13,
 		"end": 20
@@ -152,32 +155,134 @@ def findInSection(word):
 
 	sections = ["<S1>","<S2>"]
 	# general
-	for i in range(1,18):
+	for i in range(1,18+1):
 		sections.append("<G"+str(i)+">")
 	# specific
-	for i in range(1,15):
+	for i in range(1,15+1):
 		sections.append("<SG"+str(i)+">")
+	# t
+	for i in range(1,5+1):
+		sections.append("<T0"+str(i)+">")
+	# robot
+	for i in range(1,20+1):
+		sections.append("<R"+str(i)+">")
 
 	texts = ""
-	for page in range(RULE_PAGES["start"]-1,RULE_PAGES["end"]-1):
+	# normal
+	for page in range(13-1,16+1):
+		text = manual(page)
+		text = text.replace("<SG3>","")\
+			.replace(text[text.find("A Cone Stacked on a Goal is worth two"):text.find("the most points receives a ten (10) point bonus.")+len("the most points receives a ten (10) point bonus.")],"")
+		texts += text
+	# sg
+	for page in range(17-1,19+1):
+		text = manual(page)
+		texts += text
+	# t
+	for page in range(24,26):
+		text = manual(page)
+		bs = text[text.find("Small Tournaments (Level 1 Tournaments)"):text.find("12 Alliances of 2 teams")+len("12 Alliances of 2 teams")]
+		otherBs = text[text.find("This section provides rules and requirements"):text.find("Please ensure that you are familiar with each of these robot rules before proceeding with robot design.")+len("Please ensure that you are familiar with each of these robot rules before proceeding with robot design.")]
+		text = text.replace(bs,"")\
+			.replace(text[text.find("The Elimination Matches"):text.find("two wins, and advances.")+len("two wins, and advances.")],"")\
+			.replace(otherBs,"")
+		texts += text
+	# r
+	for page in range(28-1, 35):
 		text = manual(page)
 		texts += text
 
+	texts = texts.lower()
 	found = []
 
 	for i in range(len(sections)-1):
 		s = None
-		if(i < len(sections)-1 -1):
-			current = sections[i]
-			nxt = sections[i+1]
-			s = texts[texts.find(current):texts.find(nxt)-1]
+		current = sections[i].lower()
+		if(i < len(sections)-1-1):
+			nxt = sections[i+1].lower()
+			s = texts[texts.find(current):texts.find(nxt)]
 		else:
-			sections[i]
-			s = texts[texts.find(current):len(texts)-1]
+			s = texts[texts.find(current):len(texts)]
+		
+		if(sections[i] == "<SG2>"):
+			print(s)
+			nxt = sections[i+1]
+			print(str(texts.find(current))+":"+str(texts.find(nxt)))
+			print(nxt)
+
+		texts = texts.replace(s,"")
+
 		if word in s:
 			found.append(sections[i])
 
 	return found
+
+
+@client.command(pass_context=True)
+async def rule(ctx, rule):
+	if(rule is None):
+		await client.say("You didn't pass in a rule")
+	else:
+		if not rule.startswith("<"):
+			rule = "<" + rule + ">"
+		rule = rule.upper()
+		embed = Embed(title=rule,type="rich",description=getRule(rule),color=discord.Colour.teal())
+
+		await client.send_message(ctx.message.channel, embed=embed)
+
+def getRule(section):
+	sections = []
+
+	section = section.upper()
+	texts = ""
+	if section.startswith("G") or section.startswith("<G"):
+		for i in range(1,19+1):
+			sections.append("<G"+str(i)+">")
+		for page in range(12,16+1):
+			text = manual(page)
+			text = text.replace(text[text.find("A Cone Stacked on a Goal is worth two"):text.find("inadvertently cross the field border during normal game play.")+len("inadvertently cross the field border during normal game play.")],"")\
+				.replace(text[text.find("<SG1> At the"):text.find("Figure 15 (right): A Legal Preload")+len("Figure 15 (right): A Legal Preload")],"")
+			texts += text
+	elif section.startswith("S") or section.startswith("<S"):
+		sections = ["<S1>","<S2>"]
+		for i in range(1,16+1):
+			sections.append("<SG"+str(i)+">")
+		for page in range(17-1,19+1):
+			text = manual(page)
+			texts += text
+	elif section.startswith("T") or section.startswith("<T"):
+		for i in range(1,6+1):
+			sections.append("<T0"+str(i)+">")
+		for page in range(24,26):
+			text = manual(page)
+			bs = text[text.find("Small Tournaments (Level 1 Tournaments)"):text.find("12 Alliances of 2 teams")+len("12 Alliances of 2 teams")]
+			otherBs = text[text.find("This section provides rules and requirements"):text.find("Please ensure that you are familiar with each of these robot rules before proceeding with robot design.")+len("Please ensure that you are familiar with each of these robot rules before proceeding with robot design.")]
+			text = text.replace(bs,"")\
+				.replace(text[text.find("The Elimination Matches"):text.find("two wins, and advances.")+len("two wins, and advances.")],"")\
+				.replace(otherBs,"")
+			texts += text
+	elif section.startswith("R") or section.startswith("<R"):
+		for i in range(1,22+1):
+			sections.append("<R"+str(i)+">")
+		for page in range(28-1, 35):
+			text = manual(page)
+			texts += text
+
+	for i in range(len(sections)-1):
+		s = None
+		current = sections[i]
+		if(i < len(sections)-1-1):
+			nxt = sections[i+1]
+			s = texts[texts.find(current):texts.find(nxt)]
+		else:
+			s = texts[texts.find(current):len(texts)]
+		
+		if(sections[i] == section):
+			return s
+
+		texts = texts.replace(s,"")
+
+	return "Not found"
 
 ########################
 # Mathemetical Commands#
