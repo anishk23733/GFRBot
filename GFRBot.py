@@ -1,15 +1,11 @@
 import discord
 from discord.ext import commands
-import random
 # import time
 from bs4 import BeautifulSoup
 import requests
 from html.parser import HTMLParser
 import math as m
-from discord.voice_client import VoiceClient
-from discord.ext.commands import Bot
 import PyPDF2
-import pprint
 # Image Editing
 from PIL import Image
 from random import randint
@@ -17,8 +13,6 @@ import urllib.request
 import urllib
 # The below three are for replacing requests, didn't work
 import aiohttp
-import asyncio
-import async_timeout
 vc_clients = {}
 
 
