@@ -6,6 +6,8 @@ def manual(page: int = 0):
 	pageObj = pdfReader.getPage(page)
 	text = pageObj.extractText()
 	# this is the definition of shit code but whatever
+	# .replace("\t","") \
+	# .replace("  ","") \
 	return text.replace("\n","") \
 		.replace("VEX Robotics Competition In the Zone Œ Game Manual    vexrobotics.com Copyright 2016, VEX Robotics Inc. 2017-08-17","") \
 		.replace("vexrobotics.com Copyright 2017, VEX Robotics Inc. 2017-08-17","")
@@ -26,14 +28,38 @@ def findInSection(word):
 
 	sections = ["<S1>","<S2>"]
 	# general
-	for i in range(1,18):
+	for i in range(1,18+1):
 		sections.append("<G"+str(i)+">")
 	# specific
-	for i in range(1,15):
+	for i in range(1,15+1):
 		sections.append("<SG"+str(i)+">")
+	# t
+	for i in range(1,5+1):
+		sections.append("<T0"+str(i)+">")
+	# robot
+	for i in range(1,20+1):
+		sections.append("<R"+str(i)+">")
 
 	texts = ""
-	for page in range(RULE_PAGES["start"]-1,RULE_PAGES["end"]-1):
+	# normal
+	for page in range(13-1,16+1):
+		text = manual(page)
+		text = text.replace("<SG3>","")\
+			.replace(text[text.find("A Cone Stacked on a Goal is worth two"):text.find("the most points receives a ten (10) point bonus.")+len("the most points receives a ten (10) point bonus.")],"")
+		texts += text
+	# sg
+	for page in range(17-1,19+1):
+		text = manual(page)
+		texts += text
+	# t
+	for page in range(25-1, 25+1):
+		text = manual(page)
+		bs = text[text.find("Small Tournaments (Level 1 Tournaments)"):text.find("12 Alliances of 2 teams")+len("12 Alliances of 2 teams")]
+		text = text.replace(bs,"")\
+			.replace(text[text.find("The Elimination Matches"):text.find("two wins, and advances.")+len("two wins, and advances.")],"")
+		texts += text
+	# r
+	for page in range(28-1, 35):
 		text = manual(page)
 		texts += text
 
@@ -41,23 +67,31 @@ def findInSection(word):
 
 	for i in range(len(sections)-1):
 		s = None
-		if(i < len(sections)-1 -1):
-			current = sections[i]
+		current = sections[i]
+		if(i < len(sections)-1-1):
 			nxt = sections[i+1]
-			s = texts[texts.find(current):texts.find(nxt)-1]
+			s = texts[texts.find(current):texts.find(nxt)]
 		else:
-			sections[i]
-			s = texts[texts.find(current):len(texts)-1]
+			s = texts[texts.find(current):len(texts)]
+		
+		if(sections[i] == "<T05>"):
+			print(s)
+			nxt = sections[i+1]
+			print(str(texts.find(current))+":"+str(texts.find(nxt)))
+			print(nxt)
+
+		texts = texts.replace(s,"")
+
 		if word in s:
 			found.append(sections[i])
 
 	return found
 
-
-
-# <G#>, <SG#>, <R#>, <T#>
-# print(manual(7))
+def definition(word):
+	text = manual(21-1)
+	return text
 
 word = "VEX Robotics"
+# print("Definition of "+word+": " + definition(word))
 print("Found instance of "+ word + " in sections: " + ', '.join(findInSection(word)))
 # print("Found instance of " + word + " on pages: " + ', '.join([str(i) for i in find(word)]))
