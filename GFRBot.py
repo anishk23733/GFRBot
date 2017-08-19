@@ -120,10 +120,11 @@ async def random_cat(ctx, num: int = 1):
 @client.command(pass_context=True)
 async def manual(ctx, val: str = ""):
     web_file = urllib.request.urlopen("https://content.vexrobotics.com/docs/vrc-inthezone/VRC-InTheZone-GameManual-20170817.pdf")
-    pdfFileObj = open(web_file, 'rb')
-    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-    pageObj = pdfReader.getPage(0)
-    pageObj.extractText()
+    local_file = open('manual.pdf', 'wb')
+    local_file.write(web_file.read())
+    pdfReader = PyPDF2.PdfFileReader(local_file)
+    # await client.say(pdfReader.numPages)
+
 
 
 ########################
