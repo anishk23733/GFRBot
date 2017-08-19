@@ -125,10 +125,6 @@ async def manual(ctx, val: str = ""):
     pageObj = pdfReader.getPage(0)
     pageObj.extractText()
 
-    # thing = BeautifulSoup(page.text, 'html.parser')
-    # definition = thing.find_all('div', attrs={"class": "card-primary-content"})
-    # await client.say(strip_tags(str(definition[0])))
-
 
 ########################
 # Mathemetical Commands#
