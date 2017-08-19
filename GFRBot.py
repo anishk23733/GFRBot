@@ -133,31 +133,24 @@ async def manual(ctx, val: str = ""):
 
 # Math Check Command
 @client.command(pass_context=True)
-async def math(ctx):
-    await client.say("Math commands:")
-    await client.say("factorial [num] (takes a factorial of a number)")
-    await client.say("^ Do not enter a number greater than 1000")
-    await client.say("sum [num] [num2] (adds two numbers")
-    await client.say("sqrt [num] (finds the square root)")
-    await client.say("pow [num] [num2] (raise num to the num2 power)")
-
-
-# Factorial Command
-@client.command(pass_context=True)
-async def factorial(ctx, num: int):
-    await client.say(m.factorial(num))
-
-
-# Square Root Command
-@client.command(pass_context=True)
-async def sqrt(ctx, num: int):
-    await client.say(m.sqrt(num))
-
-
-# Power Command
-@client.command(pass_context=True)
-async def pow(ctx, num: int, num2: int):
-    await client.say(m.pow(num, num2))
+async def math(ctx, oper: str = "", num1: int = 0, num2: int = 0):
+    if oper == "":
+        await client.say("Math commands:")
+        await client.say("factorial [num] (takes a factorial of a number)")
+        await client.say("^ Do not enter a number greater than 1000")
+        await client.say("sum [num] [num2] (adds two numbers")
+        await client.say("sqrt [num] (finds the square root)")
+        await client.say("pow [num] [num2] (raise num to the num2 power)")
+    elif oper == "factorial":
+        await client.say(m.factorial(num1))
+    elif oper == "sqrt":
+        await client.say(m.sqrt(num))
+    elif oper == "pow":
+        await client.say(m.pow(num, num2))
+    elif oper == "factorial":
+        await client.say(m.factorial(num1))
+    else:
+        await client.say("Invalid operation.")
 
 
 # Edit Command
