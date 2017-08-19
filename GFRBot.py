@@ -1,4 +1,3 @@
-#!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
 import discord
 from discord.ext import commands
 import random
