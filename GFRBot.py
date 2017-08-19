@@ -9,6 +9,7 @@ import math as m
 from discord.voice_client import VoiceClient
 from discord.ext.commands import Bot
 import PyPDF2
+import pprint
 # Image Editing
 from PIL import Image
 from random import randint
@@ -124,8 +125,8 @@ async def manual(ctx, page: int = 0):
     local_file_read = open('manual.pdf', 'rb')
     pdfReader = PyPDF2.PdfFileReader(local_file_read)
     pageObj = pdfReader.getPage(page)
-    await client.say(pageObj.extractText())
-
+    text = pageObj.extractText()
+    await client.say(text)
 
 
 ########################
