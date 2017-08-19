@@ -25,7 +25,7 @@ vc_clients = {}
 # Put at the beginning of command
 prefix = '.'
 # Description of bot
-des = 'print("Hello!")'
+des = 'The Official 5327B Discord Bot.'
 # Make the client
 client = commands.Bot(description=des, command_prefix=prefix)
 
