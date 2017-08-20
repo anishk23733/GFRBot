@@ -2,43 +2,45 @@ import requests,json
 
 url = 'https://api.vexdb.io/v1'
 
-def getTeam(team):
-	if team != None:	
-		r = requests.get(url+'/get_teams?team='+team)
-		teamRes = r.json()['result'][0]
-		return teamRes
-	else:
-		return None
+def getTeam(team=None):
+	payload = {
+		"team": team
+	}
+	r = requests.get(url+'/get_teams',params=payload)
+	teamRes = r.json()
+	return teamRes
 
 # type is robot skills, programming skills, combined skills
-def getSkills(team,season=None,skillType=None):
-	if team != None:
-		path = url+'/get_skills?team='+team
-		if season: path+='&season='+season
-		if skillType: path+='&type='+str(skillType)
-		r = requests.get(path)
-		skills = r.json()
-		return skills
-	else:
-		return None
+def getSkills(team=None,season=None,skillType=None):
+	path = url+'/get_skills'
+	payload = {
+		"team": team,
+		"season": season,
+		"type": skillType
+	}
+	r = requests.get(path,params=payload)
+	skills = r.json()
+	return skills
 
-def getAwards(team,name=None,season=None):
-	if team != None:
-		path = url+'/get_awards?team='+team
-		if season: path+='&season='+season
-		if name: path+='&name='+name
-		r = requests.get(path)
-		awards = r.json()
-		return awards
-	else:
-		return None
+def getAwards(team=None,name=None,season=None):
+	path = url+'/get_awards'
+	payload = {
+		"team": team,
+		"name": name,
+		"season": season
+	}
+	r = requests.get(path,params=payload)
+	awards = r.json()
+	return awards
 
 def getRankings(team=None,division=None,rank=None,season=None):
-	path = url+'/get_awards?'
-	if division: path+='&division='+season
-	if team: path+='&team='+team
-	if rank: path+='&rank='+name
-	r = requests.get(path)
+	path = url+'/get_awards'
+	payload = {
+		"division": division,
+		"team": team,
+		"rank": rank
+	}
+	r = requests.get(path,params=payload)
 	rankings = r.json()
 	return rankings
 
