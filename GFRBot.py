@@ -14,6 +14,7 @@ import urllib.request
 import urllib
 # The below three are for replacing requests, didn't work
 import aiohttp
+import json
 vc_clients = {}
 
 
@@ -23,7 +24,7 @@ prefix = '.'
 des = 'The Official 5327B Discord Bot.'
 # Make the client
 client = commands.Bot(description=des, command_prefix=prefix)
-
+url = 'https://api.vexdb.io/v1'
 
 @client.event
 async def on_ready():
@@ -313,13 +314,13 @@ async def math(ctx, oper: str = "", num1: int = 0, num2: int = 0):
 
 # Edit Command
 @client.command(pass_context=True)
-async def img(ctx, url="local.jpg", config=""):
+async def img(ctx, loc="local.jpg", config=""):
 	await client.delete_message(ctx.message)
 	try:
-		urllib.request.urlretrieve(url, "local.jpg")
+		urllib.request.urlretrieve(loc, "local.jpg")
 		which = "local.jpg"
 	except:
-		which = url
+		which = loc
 
 	img = Image.open(which)
 	width, height = img.size
@@ -356,6 +357,132 @@ async def img(ctx, url="local.jpg", config=""):
 		await client.upload('local.jpg')
 	except:
 		await client.say("Incorrect format.")
+
+
+########################
+#       VEX API        #
+########################
+@client.group(pass_context=True)
+async def vex(ctx):
+	if ctx.invoked_subcommand is None:
+		await client.say('Invalid git command passed...')
+
+@vex.command(pass_context=True)
+async def help(ctx):
+	text = ("team [team number] (description of team)\n"
+	"skills [team] [season] [type] (get skills) \n"
+	"awards [num] [num2] (adds two numbers\n"
+	"rankings [num] (finds the square root)\n"
+	"events [num] [num2] (raise num to the num2 power)\n"
+	"matches [num] [num2] (raise num to the num2 power)\n")	
+	embed = Embed(title="VEX API commands",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+
+@vex.command(pass_context=True)
+async def teams(ctx,team=None):
+	text = json.dumps(getTeams(team))
+	embed = Embed(title="Teams",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+
+@vex.command(pass_context=True)
+async def skills(ctx,team=None):
+	text = json.dumps(getSkills(team))
+	embed = Embed(title="Skills",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+
+@vex.command(pass_context=True)
+async def rankings(ctx,team=None):
+	text = json.dumps(getRankings(team))
+	embed = Embed(title="Rankings",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+
+@vex.command(pass_context=True)
+async def matches(ctx,team=None):
+	text = json.dumps(getMatches(team))
+	embed = Embed(title="Matches",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+
+@vex.command(pass_context=True)
+async def events(ctx,team=None):
+	text = json.dumps(getEvents(team))
+	embed = Embed(title="Events",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+
+@vex.command(pass_context=True)
+async def awards(ctx,team=None):
+	text = json.dumps(getAwards(team))
+	embed = Embed(title="Awards",type="rich",description=text,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+		
+def getTeams(team=None):
+	if team != None:
+		r = requests.get(url+'/get_teams?team='+team)
+		teamRes = r.json()['result'][0]
+		return teamRes
+	else:
+		return None
+
+# type is robot skills, programming skills, combined skills
+def getSkills(team=None,season=None,skillType=None):
+	if team != None:
+		path = url+'/get_skills?team='+team
+		if season: path+='&season='+season
+		if skillType: path+='&type='+str(skillType)
+		r = requests.get(path)
+		skills = r.json()
+		return skills
+	else:
+		return None
+
+def getAwards(team=None,name=None,season=None):
+	if team != None:
+		path = url+'/get_awards?team='+team
+		if season: path+='&season='+season
+		if name: path+='&name='+name
+		r = requests.get(path)
+		awards = r.json()
+		return awards
+	else:
+		return None
+
+def getRankings(team=None,division=None,rank=None,season=None):
+	path = url+'/get_awards?'
+	if division: path+='&division='+season
+	if team: path+='&team='+team
+	if rank: path+='&rank='+name
+	r = requests.get(path)
+	rankings = r.json()
+	return rankings
+
+def getEvents(team=None,city=None,region=None,country=None,season=None,program="VRC",status="All"):
+	path = url+'/get_events'
+	payload = {
+		"city": city,
+		"team": team,
+		"region": region,
+		"country": country,
+		"season": season,
+		"program": program,
+		"status": status
+	}
+	r = requests.get(path,params=payload)
+	rankings = r.json()
+	return rankings	
+
+def getMatches(division=None,round=None,instance=None,field=None,team=None,scored=None,season=None):
+	path = url+'/get_matches'
+	payload = {
+		"division": division,
+		"round": round,
+		"instance": instance,
+		"field": field,
+		"team": team,
+		"scored": scored,
+		"season": season
+	}
+	r = requests.get(path,params=payload)
+	matches = r.json()
+	return matches
 
 
 client.run("MzQ3OTMyNDQ1NDI3MTA1ODAy.DHkfOA.T26ERyYvLVEmG3bNB-7eW8TJnxA")
