@@ -372,7 +372,7 @@ async def vex(ctx):
 
 @vex.command(pass_context=True)
 async def help(ctx):
-	text = ("teams [team number] (description of team)\n"
+	text = ("teams [-t team number] (description of team)\n"
 	"skills [team] [season] [type] (get skills) \n"
 	"awards [num] [num2] (adds two numbers\n"
 	"rankings [num] (finds the square root)\n"
@@ -382,28 +382,30 @@ async def help(ctx):
 	await client.send_message(ctx.message.channel, embed=embed)
 
 @vex.command(pass_context=True)
-async def teams(ctx, *, message: str):
+async def teams(ctx, *, message: str=""):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	args = parser.parse_args(shlex.split(message))
 	text = json.dumps(getTeams(team=args.team))
-	embed = Embed(title="Teams",type="rich",description=text,color=discord.Colour.teal())
-	await client.send_message(ctx.message.channel, embed=embed)
+	for paragraph in discordTextSplit(text):
+		embed = Embed(title="Teams",type="rich",description=paragraph,color=discord.Colour.teal())
+		await client.send_message(ctx.message.channel, embed=embed)
 
 @vex.command(pass_context=True)
-async def skills(ctx, *, message: str):
+async def skills(ctx, *, message: str=""):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	parser.add_argument("-s", "--season", help="season name")
 	parser.add_argument("-ty", "--type", help="type name (0 robot, 1 programming, 2 combined)")
 	args = parser.parse_args(shlex.split(message))
 
-	text = json.dumps(getSkills(team=args.team,season=args.season,type=args.type))
-	embed = Embed(title="Skills",type="rich",description=text,color=discord.Colour.teal())
-	await client.send_message(ctx.message.channel, embed=embed)
+	text = json.dumps(getSkills(team=args.team,season=args.season,skillType=args.type))
+	for paragraph in discordTextSplit(text):
+		embed = Embed(title="Skills",type="rich",description=paragraph,color=discord.Colour.teal())
+		await client.send_message(ctx.message.channel, embed=embed)
 
 @vex.command(pass_context=True)
-async def rankings(ctx, *, message: str):
+async def rankings(ctx, *, message: str=""):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	parser.add_argument("-d", "--division", help="division")
@@ -411,11 +413,12 @@ async def rankings(ctx, *, message: str):
 	args = parser.parse_args(shlex.split(message))
 
 	text = json.dumps(getRankings(team=args.team,division=args.division,rank=args.rank))
-	embed = Embed(title="Rankings",type="rich",description=text,color=discord.Colour.teal())
-	await client.send_message(ctx.message.channel, embed=embed)
+	for paragraph in discordTextSplit(text):
+		embed = Embed(title="Rankings",type="rich",description=paragraph,color=discord.Colour.teal())
+		await client.send_message(ctx.message.channel, embed=embed)
 
 @vex.command(pass_context=True)
-async def matches(ctx, *, message: str):
+async def matches(ctx, *, message: str=""):
 	# division=None,round=None,instance=None,field=None,team=None,scored=None,season=None
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
@@ -427,11 +430,12 @@ async def matches(ctx, *, message: str):
 	args = parser.parse_args(shlex.split(message))
 
 	text = json.dumps(getMatches(team=args.team,division=args.division,round=args.round,field=args.field,scored=args.scored,season=args.season))
-	embed = Embed(title="Matches",type="rich",description=text,color=discord.Colour.teal())
-	await client.send_message(ctx.message.channel, embed=embed)
+	for paragraph in discordTextSplit(text):
+		embed = Embed(title="Matches",type="rich",description=paragraph,color=discord.Colour.teal())
+		await client.send_message(ctx.message.channel, embed=embed)
 
 @vex.command(pass_context=True)
-async def events(ctx, *, message: str):
+async def events(ctx, *, message: str=""):
 	# team=None,city=None,region=None,country=None,season=None,program="VRC",status="All"
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
@@ -443,11 +447,12 @@ async def events(ctx, *, message: str):
 	args = parser.parse_args(shlex.split(message))
 
 	text = json.dumps(getEvents(team=args.team,region=args.region,country=args.country,program=args.program,season=args.season,status=args.status))
-	embed = Embed(title="Events",type="rich",description=text,color=discord.Colour.teal())
-	await client.send_message(ctx.message.channel, embed=embed)
+	for paragraph in discordTextSplit(text):
+		embed = Embed(title="Events",type="rich",description=paragraph,color=discord.Colour.teal())
+		await client.send_message(ctx.message.channel, embed=embed)
 
 @vex.command(pass_context=True)
-async def awards(ctx, *, message: str):
+async def awards(ctx, *, message: str=""):
 	# team=None,name=None,season=None
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
@@ -456,10 +461,15 @@ async def awards(ctx, *, message: str):
 	args = parser.parse_args(shlex.split(message))
 
 	text = json.dumps(getAwards(team=args.team,name=args.name,season=args.season))
-	embed = Embed(title="Awards",type="rich",description=text,color=discord.Colour.teal())
-	await client.send_message(ctx.message.channel, embed=embed)
+	for paragraph in discordTextSplit(text):
+		embed = Embed(title="Awards",type="rich",description=paragraph,color=discord.Colour.teal())
+		await client.send_message(ctx.message.channel, embed=embed)
 		
-def getTeam(team=None):
+def discordTextSplit(paragraph):
+	x = 2048
+	return [paragraph[i: i + x] for i in range(0, len(paragraph), x)]
+
+def getTeams(team=None):
 	payload = {
 		"team": team
 	}

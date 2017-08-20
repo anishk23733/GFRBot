@@ -2,7 +2,7 @@ import requests,json
 
 url = 'https://api.vexdb.io/v1'
 
-def getTeam(team=None):
+def getTeams(team=None):
 	payload = {
 		"team": team
 	}
@@ -80,7 +80,7 @@ def pretty(data):
 team = '5327B'
 print('TEAM')
 print('\n****************\n')
-pretty(getTeam(team))
+pretty(getTeams(team))
 print('\n****************\n')
 print('SKILLS')
 print('\n****************\n')
@@ -98,6 +98,6 @@ print('EVENTS')
 print('\n****************\n')
 pretty(getEvents(team=team, season="Skyrise"))
 print('\n****************\n')
-print('MATCHES')
-print('\n****************\n')
-pretty(getMatches(team=team, season="Skyrise"))
+# print('MATCHES')
+# print('\n****************\n')
+# pretty(getMatches(team=team, season="Skyrise"))
