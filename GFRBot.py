@@ -405,12 +405,25 @@ async def skills(ctx, *, message: str=""):
 	parser.add_argument("-t", "--team", help="team name")
 	parser.add_argument("-s", "--season", help="season name")
 	parser.add_argument("-ty", "--type", help="type name (0 robot, 1 programming, 2 combined)")
-	args = parser.parse_args(shlex.split(message))
 
+	args = parser.parse_args(shlex.split(message))
+	text = getSkills(team=args.team,season=args.season,skillType=args.type)
+	par = ""
+	for skills in text:
+		for i in range(1):
+			for values in skills:
+				par += (values.title() + ": " +str(skills[values]) +"\n")
+		break
+	#embed = Embed(title="Skills",type="rich",description=par,color=discord.Colour.teal())
+	embed = Embed(title="Skills",type="rich",description=par,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+	'''
+	args = parser.parse_args(shlex.split(message))
 	text = json.dumps(getSkills(team=args.team,season=args.season,skillType=args.type))
 	for paragraph in discordTextSplit(text):
 		embed = Embed(title="Skills",type="rich",description=paragraph,color=discord.Colour.teal())
-		await client.send_message(ctx.message.channel, embed=embed)
+		await client.send_message(ctx.message.channel, embed=embed)'''
+
 
 @vex.command(pass_context=True)
 async def rankings(ctx, *, message: str=""):
@@ -500,7 +513,8 @@ def getSkills(team=None,season=None,skillType=None):
 	}
 	r = requests.get(path,params=payload)
 	skills = r.json()
-	return skills
+	values = skills["result"]
+	return values
 
 def getAwards(team=None,name=None,season=None):
 	path = url+'/get_awards'
