@@ -500,7 +500,10 @@ def getTeams(team=None):
 	values = values[0]
 	teamList = []
 	for team in values:
-		teamList.append(str(team).title().replace("_", " ")+": "+str(values[team]))
+		if str(values[team]) != "":
+			teamList.append(str(team).replace("_", " ").title()+": "+str(values[team]))
+		else:
+			teamList.append(str(team).replace("_", " ").title()+": "+"None")
 	return teamList
 
 # type is robot skills, programming skills, combined skills
