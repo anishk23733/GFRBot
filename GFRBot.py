@@ -373,11 +373,11 @@ async def vex(ctx):
 @vex.command(pass_context=True)
 async def help(ctx):
 	text = ("teams [-t team number] (description of team)\n"
-	"skills [team] [season] [type] (get skills) \n"
-	"awards [num] [num2] (adds two numbers\n"
-	"rankings [num] (finds the square root)\n"
-	"events [num] [num2] (raise num to the num2 power)\n"
-	"matches [num] [num2] (raise num to the num2 power)\n")
+	"skills [-t team](get skills) \n"
+	"awards [-t team number] (awards team has won)\n"
+	"rankings [-t team number] (team rankings)\n"
+	"events [-t team number] (team events)\n"
+	"matches [-t team number] (team matches)\n")
 	embed = Embed(title="VEX API commands",type="rich",description=text,color=discord.Colour.teal())
 	await client.send_message(ctx.message.channel, embed=embed)
 
@@ -482,6 +482,7 @@ async def awards(ctx, *, message: str=""):
 	args = parser.parse_args(shlex.split(message))
 
 	text = json.dumps(getAwards(team=args.team,name=args.name,season=args.season))
+
 	for paragraph in discordTextSplit(text):
 		embed = Embed(title="Awards",type="rich",description=paragraph,color=discord.Colour.teal())
 		await client.send_message(ctx.message.channel, embed=embed)
