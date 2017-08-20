@@ -207,7 +207,7 @@ def findInSection(word):
 			s = texts[texts.find(current):texts.find(nxt)]
 		else:
 			s = texts[texts.find(current):len(texts)]
-		
+
 		if(sections[i] == "<SG2>"):
 			print(s)
 			nxt = sections[i+1]
@@ -280,7 +280,7 @@ def getRule(section):
 			s = texts[texts.find(current):texts.find(nxt)]
 		else:
 			s = texts[texts.find(current):len(texts)]
-		
+
 		if(sections[i] == section):
 			return s
 
@@ -377,7 +377,7 @@ async def help(ctx):
 	"awards [num] [num2] (adds two numbers\n"
 	"rankings [num] (finds the square root)\n"
 	"events [num] [num2] (raise num to the num2 power)\n"
-	"matches [num] [num2] (raise num to the num2 power)\n")	
+	"matches [num] [num2] (raise num to the num2 power)\n")
 	embed = Embed(title="VEX API commands",type="rich",description=text,color=discord.Colour.teal())
 	await client.send_message(ctx.message.channel, embed=embed)
 
@@ -386,10 +386,18 @@ async def teams(ctx, *, message: str=""):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	args = parser.parse_args(shlex.split(message))
-	text = json.dumps(getTeams(team=args.team))
+	text = getTeams(team=args.team)
+	par = ""
+	for teams in text:
+		par += str(teams)+"\n"
+		pass
+	embed = Embed(title="Team",type="rich",description=par,color=discord.Colour.teal())
+	await client.send_message(ctx.message.channel, embed=embed)
+	'''text = json.dumps(getTeams(team=args.team))
 	for paragraph in discordTextSplit(text):
 		embed = Embed(title="Teams",type="rich",description=paragraph,color=discord.Colour.teal())
 		await client.send_message(ctx.message.channel, embed=embed)
+		await client.say(type(text))'''
 
 @vex.command(pass_context=True)
 async def skills(ctx, *, message: str=""):
@@ -464,7 +472,7 @@ async def awards(ctx, *, message: str=""):
 	for paragraph in discordTextSplit(text):
 		embed = Embed(title="Awards",type="rich",description=paragraph,color=discord.Colour.teal())
 		await client.send_message(ctx.message.channel, embed=embed)
-		
+
 def discordTextSplit(paragraph):
 	x = 2048
 	return [paragraph[i: i + x] for i in range(0, len(paragraph), x)]
@@ -475,7 +483,12 @@ def getTeams(team=None):
 	}
 	r = requests.get(url+'/get_teams',params=payload)
 	teamRes = r.json()
-	return teamRes
+	values = teamRes["result"]
+	values = values[0]
+	teamList = []
+	for team in values:
+		teamList.append(str(team).title().replace("_", " ")+": "+str(values[team]))
+	return teamList
 
 # type is robot skills, programming skills, combined skills
 def getSkills(team=None,season=None,skillType=None):
@@ -524,7 +537,7 @@ def getEvents(team=None,city=None,region=None,country=None,season=None,program="
 	}
 	r = requests.get(path,params=payload)
 	rankings = r.json()
-	return rankings	
+	return rankings
 
 def getMatches(division=None,round=None,instance=None,field=None,team=None,scored=None,season=None):
 	path = url+'/get_matches'
