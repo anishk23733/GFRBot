@@ -1,0 +1,42 @@
+[
+	{
+		"name": "Alliance Captain",
+		"definition": "The Team Representative of the highest ranked team that is asked to invite an available team to join his or her alliance."
+	},
+	{
+		"name": "Alliance Selection",
+		"definition": "The process of choosing the permanent alliances for the Elimination Matches."
+	},
+	{
+		"name": "Autonomous Points (AP)",
+		"definition": "The second basis of ranking teams. Autonomous Points are awarded in the amount of Autonomous Bonus points earned by an Alliance in a Qualifying Match."
+	},
+	{
+		"name": "Disqualification",
+		"definition": "A penalty applied to a team for a rules violation. When a team is disqualified in a Qualifying Match they receive zero (0) WP, AP, and SP. When a team is disqualified in an Elimination Match the entire alliance is disqualified and they receive a loss for the match."
+	},
+	{
+		"name": "Elimination Match",
+		"definition": "A match used to determine the championship alliance. Alliances of three (3) face off in a best two (2) of three (3) series, with two teams playing in each match. The first alliance to win two (2) matches will proceed to the next round."
+	},
+	{
+		"name": "Practice Match",
+		"definition": "An un-scored match used to provide time for teams to get acquainted to the official playing field."
+	},
+	{
+		"name": "Qualifying Match",
+		"definition": "A match used to determine the rankings for the Alliance Selection. Alliances compete to earn Win Points, Autonomous Points, and Strength of Schedule Points."
+	},
+	{
+		"name": "Strength of Schedule Points (SP)",
+		"definition": "The third basis of ranking teams. Strength of Schedule Points are awarded in the amount of the score of the losing alliance in a Qualifying Match.",
+	},
+	{
+		"name": "Team Representative",
+		"definition": "A student chosen to represent their team during Alliance Selection for the final Elimination Matches."
+	},
+	{
+		"name": "Win Points (WP)",
+		"definition": "The first basis of ranking teams. Win Points are awarded for winning (two points) and tying (one point) a Qualifying Match."
+	}
+]
