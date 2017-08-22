@@ -50,8 +50,12 @@ async def nick(ctx, user: discord.Member, nick: str):
 # Spam Command
 @client.command(pass_context=True)
 async def spam(ctx, stuff: str, num: int = 5):
-	for i in range(num):
-		await client.say(stuff)
+	if num > 20:
+		for i in range(20):
+			await client.say(stuff)
+	else:
+		for i in range(num):
+			await client.say(stuff)
 
 
 # Test Command
@@ -208,7 +212,7 @@ async def rules(ctx, rule=None):
 		rules = open(jsonPath+'/sg.json')
 	elif rule.startswith('s'):
 		rules = open(jsonPath+'/s.json')
-	elif rule.startswith('t'):	
+	elif rule.startswith('t'):
 		rules = open(jsonPath+'/t.json')
 	if rules.closed:
 		embed = Embed(title="Invalid rule",type="rich",description="I don't think this is a rule",color=discord.Colour.red())
