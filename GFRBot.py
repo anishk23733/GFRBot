@@ -233,6 +233,26 @@ async def rules(ctx, rule=None):
 		rules.close()
 
 @vex.command(pass_context=True)
+async def search(ctx, word=None):
+	jsonPath = "json"
+	paths = ["/g.json","/r.json","/sg.json","/s.json","/t.json"]
+	found = []
+	for path in paths:
+		rul = open(jsonPath+path)
+		rules = json.load(rul)
+		for rule in rules:
+			if word.lower() in rule['definition'].lower():
+				found.append('<'+rule['name'].upper()+'>')
+		rul.close()
+	if not len(found):
+		embed = Embed(title="Could not find any rule with "+word,type="rich",description="Sorry",color=discord.Colour.red())
+		await client.send_message(ctx.message.channel, embed=embed)
+	else:
+		foundText = word +' found in rules: ' + ', '.join(found)
+		embed = Embed(title=word,type="rich",description=foundText,color=discord.Colour.red())
+		await client.send_message(ctx.message.channel, embed=embed)
+	
+@vex.command(pass_context=True)
 async def manual(ctx, page: int = 0):
 	text = manual(page)
 	await client.say(text)
@@ -269,11 +289,6 @@ async def define(ctx, word=None):
 			embed = Embed(title="Could not find word",type="rich",description="I don't think this is in the manual",color=discord.Colour.red())
 			await client.send_message(ctx.message.channel, embed=embed)
 			definit.close()
-
-
-@vex.command(pass_context=True)
-async def find(ctx, word=None):
-	pass
 
 @vex.command(pass_context=True)
 async def help(ctx):
