@@ -293,11 +293,11 @@ async def define(ctx, word=None):
 @vex.command(pass_context=True)
 async def help(ctx):
 	text = ("teams [-t team number] (description of team)\n"
-	"skills [-t team](get skills) \n"
-	"awards [-t team number] (awards team has won)\n"
-	"rankings [-t team number] (team rankings)\n"
-	"events [-t team number] (team events)\n"
-	"matches [-t team number] (team matches)\n")
+	"skills [-t team] [-s season] [-ty type of skill (0,1,2)] (get skills) \n"
+	"awards [-t team number] [-s season] [-n name] (awards team has won)\n"
+	"rankings [-t team number] [-d division] [-r rank] (team rankings)\n"
+	"events [-t team number] [-r region] [-c country] [-p program] [-s season] [-st status (All/Past/Future)] (team events)\n"
+	"matches [-t team number] [-t team] [-d division] [-r round] [-f field] [-sc scored] [-s season] (team matches)\n")
 	embed = Embed(title="VEX API commands",type="rich",description=text,color=discord.Colour.teal())
 	await client.send_message(ctx.message.channel, embed=embed)
 
@@ -313,11 +313,6 @@ async def teams(ctx, *, message: str=""):
 		pass
 	embed = Embed(title="Team",type="rich",description=par,color=discord.Colour.teal())
 	await client.send_message(ctx.message.channel, embed=embed)
-	'''text = json.dumps(getTeams(team=args.team))
-	for paragraph in discordTextSplit(text):
-		embed = Embed(title="Teams",type="rich",description=paragraph,color=discord.Colour.teal())
-		await client.send_message(ctx.message.channel, embed=embed)
-		await client.say(type(text))'''
 
 @vex.command(pass_context=True)
 async def skills(ctx, *, message: str=""):
@@ -334,16 +329,8 @@ async def skills(ctx, *, message: str=""):
 			for values in skills:
 				par += (values.title() + ": " +str(skills[values]) +"\n")
 		break
-	#embed = Embed(title="Skills",type="rich",description=par,color=discord.Colour.teal())
 	embed = Embed(title="Skills",type="rich",description=par,color=discord.Colour.teal())
 	await client.send_message(ctx.message.channel, embed=embed)
-	'''
-	args = parser.parse_args(shlex.split(message))
-	text = json.dumps(getSkills(team=args.team,season=args.season,skillType=args.type))
-	for paragraph in discordTextSplit(text):
-		embed = Embed(title="Skills",type="rich",description=paragraph,color=discord.Colour.teal())
-		await client.send_message(ctx.message.channel, embed=embed)'''
-
 
 @vex.command(pass_context=True)
 async def rankings(ctx, *, message: str=""):
@@ -360,7 +347,6 @@ async def rankings(ctx, *, message: str=""):
 
 @vex.command(pass_context=True)
 async def matches(ctx, *, message: str=""):
-	# division=None,round=None,instance=None,field=None,team=None,scored=None,season=None
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	parser.add_argument("-d", "--division", help="division")
@@ -377,12 +363,11 @@ async def matches(ctx, *, message: str=""):
 
 @vex.command(pass_context=True)
 async def events(ctx, *, message: str=""):
-	# team=None,city=None,region=None,country=None,season=None,program="VRC",status="All"
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	parser.add_argument("-r", "--region", help="region")
 	parser.add_argument("-c", "--country", help="country")
-	parser.add_argument("-p", "--program", help="VEXU/VRC")
+	parser.add_argument("-p", "--program", default="VRC", help="VEXU/VRC")
 	parser.add_argument("-s", "--season", help="season")
 	parser.add_argument("-st", "--status", help="status: All/Past/Future")
 	args = parser.parse_args(shlex.split(message))
@@ -394,7 +379,6 @@ async def events(ctx, *, message: str=""):
 
 @vex.command(pass_context=True)
 async def awards(ctx, *, message: str=""):
-	# team=None,name=None,season=None
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-t", "--team", help="team name")
 	parser.add_argument("-n", "--name", help="award name")
@@ -491,6 +475,5 @@ def getMatches(division=None,round=None,instance=None,field=None,team=None,score
 	r = requests.get(path,params=payload)
 	matches = r.json()
 	return matches
-
 
 client.run("MzQ3OTMyNDQ1NDI3MTA1ODAy.DHkfOA.T26ERyYvLVEmG3bNB-7eW8TJnxA")
